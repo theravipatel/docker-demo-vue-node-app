@@ -1,0 +1,47 @@
+services:
+  databaseService:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports: 
+      - '5432:5432'
+    volumes:
+      - ./mydb:/docker-demo-db-data
+  vue-app:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    working_dir: /docker-demo-vue-app
+    container_name: vue-app-container
+    image: vue-app-image
+    ports:
+      - 8080:8080
+    volumes:
+      - ./frontend:/docker-demo-vue-app
+      - /docker-demo-vue-app/node_modules
+    command: npm run serve
+    networks:
+      - docker-demo-network
+    depends_on:
+      - databaseService
+  node-app:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    working_dir: /docker-demo-node-app
+    container_name: node-app-container
+    image: node-app-image
+    ports:
+      - 5000:5000
+    volumes:
+      - ./backend:/docker-demo-node-app
+      - /docker-demo-node-app/node_modules
+    command: node index.js
+    networks:
+      - docker-demo-network
+    depends_on:
+      - databaseService
+networks:
+  docker-demo-network:
+    driver: bridge
