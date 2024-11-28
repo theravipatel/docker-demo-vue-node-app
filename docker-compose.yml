@@ -8,6 +8,16 @@ services:
       - '5432:5432'
     volumes:
       - ./mydb:/docker-demo-db-data
+  pgadminService:
+    image: dpage/pgadmin4
+    container_name: pgadmin-app-container
+    ports:
+      - 8888:80
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=123456
+    volumes:
+      - ./backend:/docker-demo-pgadmin
   vue-app:
     build:
       context: ./frontend
